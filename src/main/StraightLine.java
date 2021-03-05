@@ -159,7 +159,7 @@ public class StraightLine { //직진선
 		this.owner = null;
 	}
 	
-	public void glowingBlockTimer() {
+	public void glowingBlockTimer() { //사용안함
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.pluginInstance, new Runnable() {
 			public void run() {
     			clearGlowingBlock();
