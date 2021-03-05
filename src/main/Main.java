@@ -1,8 +1,8 @@
 package main;
 
+import java.io.File;
 import java.util.HashMap;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +22,12 @@ public class Main extends JavaPlugin implements Listener{
 		
 		getServer().getLogger().info("직진 플러그인 활성화됨");
 		getServer().getPluginManager().registerEvents(this, this); //이벤트 등록
+		
+		File file = new File(getDataFolder() + File.separator + "config.yml"); 
+		if (!file.exists()){ //Config없으면 기본 config
+			this.saveDefaultConfig();	
+		}
+		
 	}
 	
 	public void onDisable() {

@@ -35,6 +35,8 @@ public class StraightLine { //직진선
 	private ArrayList<EntityShulker> glowingBlockList = new ArrayList<EntityShulker>();
 	private int timerID = -1;
 	
+	private boolean allowTeleport = false;
+	
 	private ArrayList<Material> exceptTypes = new ArrayList<Material>();
 	
 	public StraightLine(Player owner, LineDirection direction) {
@@ -70,6 +72,9 @@ public class StraightLine { //직진선
 		exceptTypes.add(Material.SEEDS);
 		exceptTypes.add(Material.CHORUS_PLANT);
 	
+		allowTeleport = Main.pluginInstance.getConfig().getBoolean("allowTeleport"); //텔레포트 허용여부
+		
+		
 		//glowingBlockTimer();
 		particleTimer();
 	}
@@ -296,9 +301,19 @@ public class StraightLine { //직진선
 			
 			if (!p.getUniqueId().toString().equals(owner.getUniqueId().toString()))
 				return; // 해당 직진선의 주인이 텔레포트한게 아니면 return
-			nowPos = e.getTo().clone(); // 현재 위치 갱신
-			nowPos.setX(nowPos.getX() < 0 ? (int) nowPos.getX() - 0.5 : (int) nowPos.getX() + 0.5); // 중앙 지점
-			nowPos.setZ(nowPos.getZ() < 0 ? (int) nowPos.getZ() - 0.5 : (int) nowPos.getZ() + 0.5); // 중앙 지점
+			
+			if(allowTeleport) { //텔로포트 허용
+				nowPos = e.getTo().clone(); // 현재 위치 갱신
+				nowPos.setX(nowPos.getX() < 0 ? (int) nowPos.getX() - 0.5 : (int) nowPos.getX() + 0.5); // 중앙 지점
+				nowPos.setZ(nowPos.getZ() < 0 ? (int) nowPos.getZ() - 0.5 : (int) nowPos.getZ() + 0.5); // 중앙 지점	
+			} else { //비허용
+				if(e.getCause() != TeleportCause.PLUGIN) {
+					p.sendMessage(Main.mainMS+"텔레포트가 비허용 되어있습니다.");
+					e.setTo(nowPos);
+				}
+			}
+			
+			
 		}
 
 	}
