@@ -16,6 +16,14 @@ X축 또는 Z축을 선택하여 해당 방향으로만 이동할 수 있도록 
 * /직진 중지 - 이동 제한을 해제합니다.
 ```
 
+####  📥 플러그인 다운로드
+
+<div align=center>
+
+#####  👉 [구글 드라이브](https://drive.google.com/file/d/1s4_ec3zgM-zLMPKHNWvs7VfiNEVdVGho/view?usp=sharing)
+
+</div>
+
 #### 📷 스냅샷
 ![2021-03-05_16 52 29](https://user-images.githubusercontent.com/28488288/110084784-b13bf480-7dd3-11eb-8c3b-827106a6360d.png)
 
