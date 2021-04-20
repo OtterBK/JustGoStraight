@@ -28,8 +28,9 @@ public class StraightLine { //직진선
 
 	private LineDirection direction; //진행방향
 	private Player owner; //직진선 소유자
-	
-	private Location nowPos; //현재 위치(블럭단위)
+
+	private double radius = 0.5; //행동 반경
+	private Location rail; //현재 위치(블럭단위)
 	private Listener myEvent;
 	
 	private ArrayList<EntityShulker> glowingBlockList = new ArrayList<EntityShulker>();
@@ -39,17 +40,18 @@ public class StraightLine { //직진선
 	
 	private ArrayList<Material> exceptTypes = new ArrayList<Material>();
 	
-	public StraightLine(Player owner, LineDirection direction) {
+	public StraightLine(Player owner, LineDirection direction, double radius) {
 		
 		this.owner = owner;
+		this.radius = radius; //가로 반경
 		
-		this.nowPos = owner.getLocation();
-		nowPos.setX(nowPos.getX() < 0 ? (int)nowPos.getX() - 0.5 : (int)nowPos.getX() + 0.5); //중앙 지점
-		nowPos.setZ(nowPos.getZ() < 0 ? (int)nowPos.getZ() - 0.5 : (int)nowPos.getZ() + 0.5); //중앙 지점
+		this.rail = owner.getLocation();
+		rail.setX(rail.getX() < 0 ? (int)rail.getX() - radius : (int)rail.getX() + radius); //
+		rail.setZ(rail.getZ() < 0 ? (int)rail.getZ() - radius : (int)rail.getZ() + radius); //레일 초기화
 		
 		this.direction = direction;
 		
-		owner.teleport(nowPos); //중앙지점으로 이동
+		owner.teleport(rail); //설정된 레일로 이동
 		
 		myEvent= new StraightEvent(); //이벤트 생성
 		
@@ -79,8 +81,8 @@ public class StraightLine { //직진선
 		particleTimer();
 	}
 	
-	public Location getNowPos() {
-		return this.nowPos;
+	public Location getRailPos() {
+		return this.rail;
 	}
 	
 	public LineDirection direction() {
@@ -177,8 +179,8 @@ public class StraightLine { //직진선
     				vec.setZ(vec.getZ() + 1);
     			}
     			 
-    			Location pos1 = nowPos.clone().add(vec); //전방 블럭
-    			Location pos2 = nowPos.clone().subtract(vec); //후방 블럭
+    			Location pos1 = rail.clone().add(vec); //전방 블럭
+    			Location pos2 = rail.clone().subtract(vec); //후방 블럭
     			
     			pos1 = getGroundLocation(pos1).subtract(0,2,0); //땅 위치
     			pos2 = getGroundLocation(pos2).subtract(0,2,0); //땅 위치
@@ -204,16 +206,16 @@ public class StraightLine { //직진선
 					
 	    			if(direction == LineDirection.X) {//이동방향이 x축이라면
 	    				vec.setX(vec.getX() + 1);
-	    				side.setZ(vec.getZ() + 0.45);
+	    				side.setZ(vec.getZ() + radius);
 	    			} else { //z축이라면
 	    				vec.setZ(vec.getZ() + 1);
-	    				side.setX(vec.getX() + 0.45);
+	    				side.setX(vec.getX() + radius);
 	    			}    			 
 	    			
 	    			for(int i = -30; i <= 30; i++) { //라인 표시
 	    				if(i == 0) continue; //자기 위치는 패스
 	    				
-	    				Location pos = nowPos.clone().add(vec.clone().multiply(i)); //전방 블럭
+	    				Location pos = rail.clone().add(vec.clone().multiply(i)); //전방 블럭
 	    				
 	    				Material blockType = pos.getBlock().getType();
 	    				
@@ -251,26 +253,35 @@ public class StraightLine { //직진선
 			if(e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
 					&& e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return; //위치이동 아니면 캔슬
 			
-			double basePos = 0;
-			double newPos = 0;
+			double noDir = 0;
+			double noDir_new = 0;
+			double dir = 0;
+			double dir_new = 0;
 	    	if(direction == LineDirection.X) { //직진선이 X축이면
-	    		basePos = nowPos.getZ();//z축으로 이동은 불가능
-	    		newPos = e.getTo().getZ();
+				noDir = rail.getZ();//z축으로 이동은 불가능
+				noDir_new = e.getTo().getZ();
+
+				dir = rail.getX();//x축으로 이동은 가능
+				dir_new = e.getTo().getX();
 	    	} else if(direction == LineDirection.Z) { //직진선이 z축이면
-	    		basePos = nowPos.getX();//x축으로 이동은 불가능
-	    		newPos = e.getTo().getX();
+				noDir = rail.getX();//x축으로 이동은 불가능
+				noDir_new = e.getTo().getX();
+
+				dir = rail.getZ();//Z축으로 이동은 가능
+				dir_new = e.getTo().getZ();
 	    	}
 	    	
-	    	if(Math.abs(basePos - newPos) >= 0.5) { //이동 불가선으로 1칸 이상 이동했다면
+	    	if(Math.abs(noDir - noDir_new) >= radius) { //이동 불가선으로 행동반경 이상 이동했다면
 	    		e.setTo(e.getFrom());//이동 취소
 	    	} else {
-	    		if(nowPos.distance(e.getTo()) >= 0.5) { //이동 가능선으로 1칸이상 이동시			
-	    			nowPos = e.getTo().clone(); //현재 위치 갱신
-	    			nowPos.setX(nowPos.getX() < 0 ? (int)nowPos.getX() - 0.5 : (int)nowPos.getX() + 0.5); //중앙 지점
-	    			nowPos.setZ(nowPos.getZ() < 0 ? (int)nowPos.getZ() - 0.5 : (int)nowPos.getZ() + 0.5); //중앙 지점
-	    				
+	    		if(Math.abs(dir - dir_new) >= radius) { //이동 가능선으로 행동반경이상 이동시
+	    			if(direction == LineDirection.X){
+	    				rail.setX(e.getTo().getX());
+					} else {
+						rail.setY(e.getTo().getY());
+					}
 	    		}
-	    	}	
+	    	}
 		}		
 		
 		@EventHandler
@@ -285,9 +296,9 @@ public class StraightLine { //직진선
 			if (!p.getUniqueId().toString().equals(owner.getUniqueId().toString()))
 				return; // 해당 직진선의 주인이 리스폰한게 아니면 return
 			
-			nowPos = e.getRespawnLocation().clone(); // 현재 위치 갱신
-			nowPos.setX(nowPos.getX() < 0 ? (int) nowPos.getX() - 0.5 : (int) nowPos.getX() + 0.5); // 중앙 지점
-			nowPos.setZ(nowPos.getZ() < 0 ? (int) nowPos.getZ() - 0.5 : (int) nowPos.getZ() + 0.5); // 중앙 지점
+			rail = e.getRespawnLocation().clone(); // 현재 위치 갱신
+			rail.setX(rail.getX() < 0 ? (int) rail.getX() - radius : (int) rail.getX() + radius); // 중앙 지점
+			rail.setZ(rail.getZ() < 0 ? (int) rail.getZ() - radius : (int) rail.getZ() + radius); // 중앙 지점
 		}
 		
 		@EventHandler
@@ -303,13 +314,15 @@ public class StraightLine { //직진선
 				return; // 해당 직진선의 주인이 텔레포트한게 아니면 return
 			
 			if(allowTeleport) { //텔로포트 허용
-				nowPos = e.getTo().clone(); // 현재 위치 갱신
-				nowPos.setX(nowPos.getX() < 0 ? (int) nowPos.getX() - 0.5 : (int) nowPos.getX() + 0.5); // 중앙 지점
-				nowPos.setZ(nowPos.getZ() < 0 ? (int) nowPos.getZ() - 0.5 : (int) nowPos.getZ() + 0.5); // 중앙 지점	
+				if(e.getCause() != TeleportCause.PLUGIN) {
+					rail = e.getTo().clone(); // 현재 위치 갱신
+					rail.setX(rail.getX() < 0 ? (int) rail.getX() - radius : (int) rail.getX() + radius); // 중앙 지점
+					rail.setZ(rail.getZ() < 0 ? (int) rail.getZ() - radius : (int) rail.getZ() + radius); // 중앙 지점
+				}
 			} else { //비허용
 				if(e.getCause() != TeleportCause.PLUGIN) {
 					p.sendMessage(Main.mainMS+"텔레포트가 비허용 되어있습니다.");
-					e.setTo(nowPos);
+					e.setTo(rail);
 				}
 			}
 			

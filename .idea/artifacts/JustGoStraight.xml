@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JustGoStraight">
+    <output-path>$PROJECT_DIR$/classes/artifacts/JustGoStraight</output-path>
+    <root id="archive" name="JustGoStraight.jar">
+      <element id="module-output" name="[마크]직진만 가능" />
+      <element id="file-copy" path="$PROJECT_DIR$/plugin.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/config.yml" />
+    </root>
+  </artifact>
+</component>
