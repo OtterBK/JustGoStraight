@@ -278,7 +278,7 @@ public class StraightLine { //Á÷Áø¼±
 	    			if(direction == LineDirection.X){
 	    				rail.setX(e.getTo().getX());
 					} else {
-						rail.setY(e.getTo().getY());
+						rail.setZ(e.getTo().getZ());
 					}
 	    		}
 	    	}
