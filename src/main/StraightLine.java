@@ -280,6 +280,7 @@ public class StraightLine { //Á÷Áø¼±
 					} else {
 						rail.setZ(e.getTo().getZ());
 					}
+					rail.setY(e.getTo().getY());
 	    		}
 	    	}
 		}		
