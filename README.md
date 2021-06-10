@@ -39,7 +39,7 @@ allowTeleport: true
 
 #### 📷 스냅샷
 ![2021-03-05_16 52 29](https://user-images.githubusercontent.com/28488288/110084784-b13bf480-7dd3-11eb-8c3b-827106a6360d.png)
-[![유튜브](http://img.youtube.com/vi/DJklS6rKfF0/0.jpg)](https://youtu.be/DJklS6rKfF0)
+[![유튜브](http://img.youtube.com/vi/ojCecTuHzpY/0.jpg)](https://youtu.be/ojCecTuHzpY)
 ##### 클릭하여 동영상 시청
 
 
